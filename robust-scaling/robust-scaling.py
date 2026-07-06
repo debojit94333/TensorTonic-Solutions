@@ -1,34 +1,39 @@
-def median(values):
-    """
-    Compute the median as the middle value (odd length) or average of two middle values (even length)
-    """
-    n = len(values)
-    if n == 1: return values[0]
-        
-    if n % 2 == 1:
-        median = values[n//2]
-    else:
-        median = (values[(n-1) // 2] + values[n//2]) / 2
-    return median
-
 def robust_scaling(values):
     """
     Scale values using median and interquartile range.
     """
+    # Write code here
     n = len(values)
-    if n == 1: return [0]
+    if n == 1:
+        return [0.0]
         
-    sorted_values = sorted(values)
-    q1 = median(sorted_values[: n//2])
-    q2 = median(sorted_values)
-    q3 = median(sorted_values[(n + 1)//2 :])
+    def quartiles(n, mid, mid2):
+        sorted_values = sorted(values)
+        if n % 2 != 0:
+            Q2 = sorted_values[mid]
+        else:
+            Q2 = (sorted_values[mid-1] + sorted_values[mid]) / 2
+            
+        if mid % 2 != 0:
+            Q1 = sorted_values[mid2]
+            Q3 = sorted_values[n-mid2-1]
+        else:
+            Q1 = (sorted_values[mid2-1] + sorted_values[mid2]) / 2
+            Q3 = (sorted_values[n-mid2-1] + sorted_values[n-mid2]) / 2
+            
+        return Q1, Q2, Q3
+        
+    mid = n // 2
+    mid2 = mid // 2
+    Q1, Q2, Q3 = quartiles(n, mid, mid2)
     
-    values_scaled = []
-    iqr = q3 - q1
-    if iqr == 0: iqr = 1
+    IQR = Q3 - Q1
+    if IQR == 0:
+        IQR += 1
 
-    for x in values:
-        x_scaled = (x - q2) / iqr
-        values_scaled.append(x_scaled)
+    if IQR == 0: IQR += 1
+    values_scaled = [0.0] * n
+    for i in range(n):
+        values_scaled[i] = (values[i] - Q2) / IQR 
+            
     return values_scaled
-    
