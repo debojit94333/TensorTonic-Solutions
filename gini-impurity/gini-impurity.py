@@ -1,23 +1,9 @@
-import numpy as np
+from collections import Counter
 
-def single_node_gini_impurity(y, n):
-    """
-    Calculate gini impurity for a single node.
-    """
-    if n == 0: 
-        return 0
-        
-    d = {}
-    for i in y:
-        if i not in d:
-            d[i] = 0
-        d[i] += 1
-
+def gini_t(n, y):
     gini = 1
-    for i in d.values():
-        p = i / n
-        gini -= p**2
-        
+    for _, v in Counter(y).items():
+        gini -= (v / n) ** 2
     return gini
 
 def gini_impurity(y_left, y_right):
@@ -29,9 +15,7 @@ def gini_impurity(y_left, y_right):
     n = n_l + n_r
     if n == 0:
         return 0.0
-
-    gini_l = single_node_gini_impurity(y_left, n_l)
-    gini_r = single_node_gini_impurity(y_right, n_r)
-    gini_split = n_l/n * gini_l + n_r/n * gini_r
-
+        
+    gini_l, gini_r = gini_t(n_l, y_left), gini_t(n_r, y_right)
+    gini_split = (n_l * gini_l + n_r * gini_r) / n
     return gini_split
